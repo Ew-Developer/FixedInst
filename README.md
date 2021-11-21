@@ -19,6 +19,15 @@ Part.CFrame = CFrame.new(10,3,10)
 ```
 Then it will create an anchored part in workspace that their cframe is at 10, 3, 10. And it will have godmode so other scripts cant unanchor it or move it.
 
+You can also do "Instance.debug = true" to turn on debug mode. In debug mode it will print when a parts property has changed.
+Example:
+```
+1 Parent
+nil
+Workspace
+```
+The "1" is the debug id of the part (the id an instance if given when created), "Parent" is the property that got changed. "Nil" is what the property currently is, and "Workspace" is what it wants it to be.
+
 # Info
 
 The "_Instance" value is the real Instance.new, it can be used as an aternative to Instance.new("Part",workspace,false). As both wont apply godmode to the instance.
