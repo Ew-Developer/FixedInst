@@ -28,6 +28,39 @@ Workspace
 ```
 The "1" is the debug id of the part (the id an instance if given when created), "Parent" is the property that got changed. "Nil" is what the property currently is, and "Workspace" is what it wants it to be.
 
+# Custom properties
+The instance will have custom properties, heres a list of them:
+- Born
+
+The tick the instance was created at
+- LastRefit
+
+The tick the instance was last refitted at
+- DebugId
+
+The DebugId the instance has, a number
+- Properties
+
+An dictionary of all properties the instance is expected to have
+- Instance
+
+The real instance, the thing your script gets is an proxy
+- Alive
+
+If the instance is alive and its godmode is active
+
+# Custom functions
+It also has some custom functions, hers a list of them:
+- Destroy
+
+Destroys the part and removes the godmode
+- Refit
+
+Makes the instance refit
+- ClearAllChildren
+
+Destroys all parts in it, if any of the parts have godmode on them, it will remove it
+
 # Info
 
 The "_Instance" value is the real Instance.new, it can be used as an aternative to Instance.new("Part",workspace,false). As both wont apply godmode to the instance.
