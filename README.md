@@ -63,4 +63,4 @@ Destroys all parts in it, if any of the parts have godmode on them, it will remo
 
 # Info
 
-The "_Instance" value is the real Instance.new, it can be used as an aternative to Instance.new("Part",workspace,false). As both wont apply godmode to the instance.
+The "_Instance" value is the real Instance.new, it can be used as an alternative to Instance.new("Part",workspace,false). As both wont apply godmode to the instance.
