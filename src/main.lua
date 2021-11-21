@@ -402,4 +402,4 @@ function Instance.new(Class,Parent,ApplyGodmode)
 	return Proxy
 end
 
-return Instance.new,_Instance
+return Instance,_Instance
