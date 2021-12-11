@@ -34,6 +34,7 @@ function GetProperties()
 		"robloxLocked",
 		"AbsoluteSize",
 		"AbsolutePosition",
+		"Occupant",
 	}
 	local disallowedCategories = {
 		"Derived World Data",
@@ -283,8 +284,10 @@ function Instance.new(Class,Parent,ApplyGodmode)
 			end
 			
 			if CustomProperties["Properties"][Name] then
-				print(DebugId,Name,"\n",tostring(instance[Name]),"\n",tostring(GetValue(CustomProperties["Properties"][Name])),"\n")
-
+				if Instance.debug == true then
+					print(DebugId,Name,"\n",tostring(instance[Name]),"\n",tostring(GetValue(CustomProperties["Properties"][Name])),"\n")
+				end
+				
 				Refit()
 			end
 		end)
