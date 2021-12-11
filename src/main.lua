@@ -126,6 +126,7 @@ end
 
 local DebugIdCount = 0
 local PropertyPart = _Instance("Part",nil)
+Instance.debug = false
 function Instance.new(Class,Parent,ApplyGodmode)
 	assert(Class ~= nil,"invalid argument #1 to 'new' (string expected got nil)")
 	assert(typeof(Class) ~= "boolean","invalid argument #1 to 'new' (string expected got boolean)")
@@ -155,6 +156,8 @@ function Instance.new(Class,Parent,ApplyGodmode)
 	local Refitting = true
 	local SetupInstance
 	local Refit
+	
+	local CanChange = {}
 	
 	local CustomProperties
 	local Events
@@ -253,6 +256,7 @@ function Instance.new(Class,Parent,ApplyGodmode)
 		CustomProperties["LastRefit"] = tick()
 		Proxies[instance] = Proxy
 		
+		table.clear(CanChange)
 		for Name,Value in pairs(CustomProperties["Properties"]) do
 			if Name ~= "Parent" then
 				pcall(function()
@@ -273,52 +277,15 @@ function Instance.new(Class,Parent,ApplyGodmode)
 			if Refitting then
 				return
 			end
+			if CanChange[Name] == true then
+				CanChange[Name] = false
+				return
+			end
 			
 			if CustomProperties["Properties"][Name] then
-				if Name == "Parent" then
-					local _Proxy = CustomProperties["Properties"]["Parent"]
-					if _Proxy and IsProxy(_Proxy) then
-						if _Proxy["Properties"]["Parent"] ~= _Proxy.Parent then
-							_Proxy.Refitted:Wait()
-						end
-					end
-				end
-				
-				local Changed = false
-				if typeof(CustomProperties["Properties"][Name]) == "number" then
-					Changed = not CompareNumber(CustomProperties["Properties"][Name],instance[Name])
-				elseif typeof(CustomProperties["Properties"][Name]) == "Vector3" then
-					if not CompareNumber(CustomProperties["Properties"][Name].X,instance[Name].X) then
-						Changed = true
-					elseif not CompareNumber(CustomProperties["Properties"][Name].Y,instance[Name].Y) then
-						Changed = true
-					elseif not CompareNumber(CustomProperties["Properties"][Name].Z,instance[Name].Z) then
-						Changed = true
-					end
-				elseif typeof(CustomProperties["Properties"][Name]) == "CFrame" then
-					local P = {CustomProperties["Properties"]["CFrame"]:GetComponents()}
-					local I = {instance["CFrame"]:GetComponents()}
-					
-					for i,v in ipairs(P) do
-						if i > 3 then
-							if not CompareNumber(v*0.1,I[i]*0.1) then
-								Changed = true
-								
-								break
-							end
-						end
-					end
-				else
-					if instance[Name] ~= GetValue(CustomProperties["Properties"][Name]) then
-						Changed = true
-					end
-				end
-				
-				if Changed then
-					print(DebugId,Name,"\n",tostring(instance[Name]),"\n",tostring(GetValue(CustomProperties["Properties"][Name])),"\n")
-					
-					Refit()
-				end
+				print(DebugId,Name,"\n",tostring(instance[Name]),"\n",tostring(GetValue(CustomProperties["Properties"][Name])),"\n")
+
+				Refit()
 			end
 		end)
 		
@@ -326,6 +293,7 @@ function Instance.new(Class,Parent,ApplyGodmode)
 		Events["Refitted"]:Fire(instance)
 		
 		if CustomProperties["Properties"]["Parent"] then
+			CanChange["Parent"] = true
 			instance.Parent = GetValue(CustomProperties["Properties"]["Parent"])
 		end
 	end
@@ -343,40 +311,26 @@ function Instance.new(Class,Parent,ApplyGodmode)
 		local Args = ...
 		
 		local suc,err = pcall(function()
-			CustomProperties["Properties"][Name] = Value
+			CanChange[Name] = true
 			if instance:IsA("BasePart") then
 				if Name == "Position" then
-					local x, y, z, R00, R01, R02, R10, R11, R12, R20, R21, R22 = CustomProperties["Properties"]["CFrame"]:GetComponents()
-					CustomProperties["Properties"]["CFrame"] = CFrame.new(Value.X, Value.Y, Value.Z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
+					CanChange["CFrame"] = true
 				elseif Name == "Orientation" or Name == "Rotation" then
-					--[[CustomProperties["Properties"]["CFrame"] = CFrame.new(CustomProperties["Properties"]["CFrame"].X,CustomProperties["Properties"]["CFrame"].Y,CustomProperties["Properties"]["CFrame"].Z) * CFrame.Angles(FloatingPointFix(math.rad(Value.X)),FloatingPointFix(math.rad(Value.Y)),FloatingPointFix(math.rad(Value.Z)))
-					
-					CustomProperties["Properties"]["Orientation"] = Vector3.new(FloatingPointFix(Value.X),FloatingPointFix(Value.Y),FloatingPointFix(Value.Z))
-					CustomProperties["Properties"]["Rotation"] = CustomProperties["Properties"]["Orientation"]]
-					
-					PropertyPart.CFrame = CustomProperties["Properties"]["CFrame"]
-					PropertyPart[Name] = Value
-					
-					CustomProperties["Properties"]["CFrame"] = PropertyPart.CFrame
-					CustomProperties["Properties"]["Orientation"] = PropertyPart.Orientation
-					CustomProperties["Properties"]["Rotation"] = PropertyPart.Rotation
+					CanChange["CFrame"] = true
+					CanChange["Orientation"] = true
+					CanChange["Rotation"] = true
 				elseif Name == "CFrame" then
-					CustomProperties["Properties"]["Position"] = Vector3.new(CustomProperties["Properties"]["CFrame"].X,CustomProperties["Properties"]["CFrame"].Y,CustomProperties["Properties"]["CFrame"].Z)
-					
-					local Rad_X,Rad_Y,Rad_Z = Value:ToOrientation()
-					local X = FloatingPointFix(math.deg(Rad_X))
-					local Y = FloatingPointFix(math.deg(Rad_Y))
-					local Z = FloatingPointFix(math.deg(Rad_Z))
-					
-					CustomProperties["Properties"]["Orientation"] = Vector3.new(X,Y,Z)
-					CustomProperties["Properties"]["Rotation"] = CustomProperties["Properties"]["Orientation"]
+					CanChange["Position"] = true
+					CanChange["Orientation"] = true
+					CanChange["Rotation"] = true
 				elseif Name == "Color" then
-					CustomProperties["Properties"]["BrickColor"] = BrickColor.new(Value)
+					CanChange["BrickColor"] = true
 				elseif Name == "BrickColor" then
-					CustomProperties["Properties"]["Color"] = Value.Color
+					CanChange["Color"] = true
 				end
 			end
 			
+			CustomProperties["Properties"][Name] = Value
 			instance[Name] = GetValue(CustomProperties["Properties"][Name])
 		end)
 		
@@ -393,11 +347,11 @@ function Instance.new(Class,Parent,ApplyGodmode)
 		return instance
 	end
 	
+	SetupInstance()
+	
 	if Parent then
 		Proxy.Parent = Parent
 	end
-	
-	SetupInstance()
 	
 	return Proxy
 end
