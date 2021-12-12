@@ -48,6 +48,7 @@ function GetProperties()
 		"AbsoluteSize",
 		"AbsolutePosition",
 		"Occupant",
+		"WorldPivot",
 	}
 	local disallowedCategories = {
 		"Derived World Data",
@@ -142,8 +143,7 @@ local DebugIdCount = 0
 local PropertyPart = _Instance("Part",nil)
 Instance.debug = false
 function Instance.new(Class,Parent,ApplyGodmode)
-	assert(Class ~= nil,"invalid argument #1 to 'new' (string expected got nil)")
-	assert(typeof(Class) ~= "boolean","invalid argument #1 to 'new' (string expected got boolean)")
+	assert(typeof(Class) == "string","invalid argument #1 to 'new' (string expected got "..tostring(typeof(Class))..")")
 	
 	local SetEnabled = false
 	if Class == "Part" then
