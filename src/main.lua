@@ -302,7 +302,7 @@ function Instance.new(Class,Parent,ApplyGodmode)
 				end
 			end
 			
-			if CustomProperties["Properties"][Name] then
+			if CustomProperties["Properties"][Name] and instance[Name] ~= CustomProperties["Properties"][Name] then
 				if Instance.debug == true then
 					print(DebugId,Name,"\n",tostring(instance[Name]),"\n",tostring(GetValue(CustomProperties["Properties"][Name])),"\n")
 				end
