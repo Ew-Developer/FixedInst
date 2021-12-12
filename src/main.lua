@@ -154,7 +154,6 @@ function Instance.new(Class,Parent,ApplyGodmode)
 	
 	local DefaultProperties = GetDefaultProperties(Class,instance)
 	
-	local Refitting = true
 	local SetupInstance
 	local Refit
 	
@@ -173,6 +172,7 @@ function Instance.new(Class,Parent,ApplyGodmode)
 		
 		["Instance"] = nil;
 		["Alive"] = true;
+		["Refitting"] = true;
 		
 		["Destroy"] = function()
 			CustomProperties["Alive"] = false
@@ -212,7 +212,7 @@ function Instance.new(Class,Parent,ApplyGodmode)
 	local ChangedEvent = nil
 	
 	Refit = function()
-		Refitting = true
+		CustomProperties["Refitting"] = true
 		
 		if ChangedEvent then
 			ChangedEvent:Disconnect()
@@ -275,12 +275,18 @@ function Instance.new(Class,Parent,ApplyGodmode)
 				instance:Destroy()
 				return
 			end
-			if Refitting then
+			if CustomProperties["Refitting"] then
 				return
 			end
 			if CanChange[Name] == true then
 				CanChange[Name] = false
 				return
+			end
+			local _Proxy = CustomProperties["Properties"]["Parent"]
+			if _Proxy and IsProxy(_Proxy) then
+				if _Proxy.Refitting then
+					return
+				end
 			end
 			
 			if CustomProperties["Properties"][Name] then
@@ -292,7 +298,7 @@ function Instance.new(Class,Parent,ApplyGodmode)
 			end
 		end)
 		
-		Refitting = false
+		CustomProperties["Refitting"] = false
 		Events["Refitted"]:Fire(instance)
 		
 		if CustomProperties["Properties"]["Parent"] then
@@ -304,7 +310,7 @@ function Instance.new(Class,Parent,ApplyGodmode)
 	Meta.__index = function(self,Method,...)
 		local Args = ...
 		
-		if CustomProperties[Method] then
+		if CustomProperties[Method] ~= nil then
 			return CustomProperties[Method]
 		end
 		
@@ -358,5 +364,12 @@ function Instance.new(Class,Parent,ApplyGodmode)
 	
 	return Proxy
 end
+
+local p = Instance.new("Part",workspace)
+p.Anchored = true
+p.Position = Vector3.new(10,3,10)
+local p2 = Instance.new("Part",p)
+p2.Anchored = true
+p2.Position = Vector3.new(10,1,10)
 
 return Instance,_Instance
