@@ -7,6 +7,19 @@ local Proxies = {}
 local IsProxyTable = {}
 local DefaultPropertieCache = {}
 
+function IsDestroyed(i)
+	if i.Parent then
+		return false
+	end
+	local s,Destroyed = pcall(function()
+		i.Parent = i
+	end)
+	if s or not Destroyed then
+		return false
+	else
+		return not string.match(Destroyed,"Attempt to set .+ as its own parent")
+	end
+end
 function GetProperties()
 	local httpService = game:GetService("HttpService")
 	local worked, apiDump = pcall(function()
@@ -303,7 +316,9 @@ function Instance.new(Class,Parent,ApplyGodmode)
 		
 		if CustomProperties["Properties"]["Parent"] then
 			CanChange["Parent"] = true
-			instance.Parent = GetValue(CustomProperties["Properties"]["Parent"])
+			pcall(function()
+				instance.Parent = GetValue(CustomProperties["Properties"]["Parent"])
+			end)
 		end
 	end
 	
