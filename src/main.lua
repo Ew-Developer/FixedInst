@@ -328,6 +328,9 @@ function Instance.new(Class,Parent,ApplyGodmode)
 		if CustomProperties[Method] ~= nil then
 			return CustomProperties[Method]
 		end
+		if CustomProperties["Properties"][Method] ~= nil then
+			return CustomProperties["Properties"][Method]
+		end
 		
 		return instance[Method]
 	end
