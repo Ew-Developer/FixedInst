@@ -333,7 +333,7 @@ function Instance.new(Class,Parent,ApplyGodmode)
 	end
 	Meta.__newindex = function(self,Name,Value,...)
 		local Args = ...
-		if Name == "Name" then
+		if Name == "Name" and Value ~= tostring(DebugId) then
 			return
 		end
 		
@@ -387,7 +387,7 @@ function Instance.new(Class,Parent,ApplyGodmode)
 	if Parent then
 		Proxy.Parent = Parent
 	end
-	Proxy.Name = DebugId
+	Proxy.Name = tostring(DebugId)
 	
 	return Proxy
 end
