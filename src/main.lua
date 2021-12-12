@@ -333,6 +333,9 @@ function Instance.new(Class,Parent,ApplyGodmode)
 	end
 	Meta.__newindex = function(self,Name,Value,...)
 		local Args = ...
+		if Name == "Name" then
+			Value = tostring(DebugId)
+		end
 		
 		local suc,err = pcall(function()
 			local Allow = {}
