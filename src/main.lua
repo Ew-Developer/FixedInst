@@ -365,11 +365,4 @@ function Instance.new(Class,Parent,ApplyGodmode)
 	return Proxy
 end
 
-local p = Instance.new("Part",workspace)
-p.Anchored = true
-p.Position = Vector3.new(10,3,10)
-local p2 = Instance.new("Part",p)
-p2.Anchored = true
-p2.Position = Vector3.new(10,1,10)
-
 return Instance,_Instance
