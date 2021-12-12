@@ -335,27 +335,35 @@ function Instance.new(Class,Parent,ApplyGodmode)
 		local Args = ...
 		
 		local suc,err = pcall(function()
-			CanChange[Name] = true
+			local Allow = {}
+			
+			Allow[Name] = true
 			if instance:IsA("BasePart") then
 				if Name == "Position" then
-					CanChange["CFrame"] = true
+					Allow["CFrame"] = true
 				elseif Name == "Orientation" or Name == "Rotation" then
-					CanChange["CFrame"] = true
-					CanChange["Orientation"] = true
-					CanChange["Rotation"] = true
+					Allow["CFrame"] = true
+					Allow["Orientation"] = true
+					Allow["Rotation"] = true
 				elseif Name == "CFrame" then
-					CanChange["Position"] = true
-					CanChange["Orientation"] = true
-					CanChange["Rotation"] = true
+					Allow["Position"] = true
+					Allow["Orientation"] = true
+					Allow["Rotation"] = true
 				elseif Name == "Color" then
-					CanChange["BrickColor"] = true
+					Allow["BrickColor"] = true
 				elseif Name == "BrickColor" then
-					CanChange["Color"] = true
+					Allow["Color"] = true
 				end
 			end
 			
+			for n,_ in pairs(Allow) do
+				CanChange[n] = true
+			end
 			CustomProperties["Properties"][Name] = Value
 			instance[Name] = GetValue(CustomProperties["Properties"][Name])
+			for n,_ in pairs(Allow) do
+				CanChange[n] = false
+			end
 		end)
 		
 		if not suc then
